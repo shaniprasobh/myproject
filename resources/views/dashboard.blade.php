@@ -1,43 +1,63 @@
-@extends('layouts.app')
+@extends('adminlte::page')  <!-- Using AdminLTE layout -->
 
 @section('title', 'Dashboard')
 
+@section('content_header')
+    <h1>Dashboard</h1>
+@endsection
+
 @section('content')
 <div class="container-fluid">
-    <h1>Dashboard</h1>
     <div class="row">
-        <!-- Example cards -->
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-info">
-                <div class="inner">
-                    <h3>{{ \App\Models\Company::count() }}</h3>
-                    <p>Companies</p>
+        <!-- Welcome Card -->
+        <div class="col-md-12 mb-3">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Welcome!</h3>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-building"></i>
+                <div class="card-body">
+                    <p>Hello <strong>{{ auth()->user()->name }}</strong>, welcome to your project dashboard.</p>
                 </div>
-                <a href="{{ route('companies.index') }}" class="small-box-footer">
-                    More info <i class="fas fa-arrow-circle-right"></i>
-                </a>
             </div>
         </div>
 
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-success">
-                <div class="inner">
-                    <h3>{{ \App\Models\Employee::count() }}</h3>
-                    <p>Employees</p>
+        <!-- Companies Card -->
+        <div class="col-md-6 mb-3">
+            <div class="card card-info">
+                <div class="card-header">
+                    <h3 class="card-title">Companies</h3>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-users"></i>
+                <div class="card-body">
+                    <p>Manage all companies in the system.</p>
+                    <a href="{{ route('companies.index') }}" class="btn btn-info">Go to Companies</a>
                 </div>
-                <a href="{{ route('employees.index') }}" class="small-box-footer">
-                    More info <i class="fas fa-arrow-circle-right"></i>
-                </a>
             </div>
         </div>
 
-        <!-- Add more cards as needed -->
+        <!-- Employees Card -->
+        <div class="col-md-6 mb-3">
+            <div class="card card-success">
+                <div class="card-header">
+                    <h3 class="card-title">Employees</h3>
+                </div>
+                <div class="card-body">
+                    <p>Manage all employees in the system.</p>
+                    <a href="{{ route('employees.index') }}" class="btn btn-success">Go to Employees</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+@endsection
+
+@section('css')
+    <style>
+        .card { min-height: 150px; }
+    </style>
+@endsection
+
+@section('js')
+    <script>
+        console.log('Dashboard loaded');
+    </script>
 @endsection
