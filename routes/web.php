@@ -8,6 +8,8 @@ Route::get('/', function () {
 
 Auth::routes(['register' => false]); // disables registration
 
+Route::resource('companies', CompanyController::class)->middleware('auth');
+
 Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
