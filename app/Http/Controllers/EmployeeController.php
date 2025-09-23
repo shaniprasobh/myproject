@@ -3,114 +3,93 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Employee;
+use App\Models\Company;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EmployeeCreated;
+
 
 class EmployeeController extends Controller
 {
-    /**
-     * Show the profile of the logged-in user (if they have an employee record).
-     */
-    public function profile()
-    {
-        $employee = \App\Models\Employee::where('user_id', auth()->id())->with('company')->first();
-        if (!$employee) {
-            abort(404, 'Employee profile not found.');
-        }
-        return view('employees.show', compact('employee'));
-    }
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $employees = \App\Models\Employee::with('company')->get();
+        $employees = Employee::with('company')->get();
         return view('employees.index', compact('employees'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $companies = \App\Models\Company::all();
+        $companies = Company::all();
         return view('employees.create', compact('companies'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
-            'designation' => 'nullable|string|max:255',
-            'company_id' => 'nullable|exists:companies,id',
-            'email' => 'nullable|email',
+            'email' => 'required|email|unique:employees,email',
+            'company_id' => 'required|exists:companies,id',
             'mobile_number' => 'nullable|string|max:15',
+            'address' => 'nullable|string',
         ]);
 
-        // If email is provided, create a user and send credentials
-        $userId = null;
-        $plainPassword = null;
-        if (!empty($validated['email'])) {
-            $plainPassword = \Str::random(8);
-            $user = \App\Models\User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => bcrypt($plainPassword),
-            ]);
-            $userId = $user->id;
+        // Generate a random password
+        $tempPassword = Str::random(8);
 
-            // Send email
-            \Mail::to($validated['email'])->send(new \App\Mail\EmployeeAccountMail($validated['email'], $plainPassword));
-        }
+        // Create employee
+        $employee = Employee::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'company_id' => $request->company_id,
+            'mobile_number' => $request->mobile_number,
+            'address' => $request->address,
+            'password' => Hash::make($tempPassword),
+        ]);
 
-        $employee = \App\Models\Employee::create(array_merge($validated, ['user_id' => $userId]));
-        return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
+        // Send email to employee
+        Mail::to($employee->email)->send(new EmployeeCreated($employee, $tempPassword));
+
+        return redirect()->route('employees.index')
+                         ->with('success', 'Employee created successfully and email sent.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+
+
+    public function show(Employee $employee)
     {
-        $employee = \App\Models\Employee::with('company')->findOrFail($id);
         return view('employees.show', compact('employee'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Employee $employee)
     {
-        $employee = \App\Models\Employee::findOrFail($id);
-        $companies = \App\Models\Company::all();
+        $companies = Company::all();
         return view('employees.edit', compact('employee', 'companies'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Employee $employee)
     {
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
-            'designation' => 'nullable|string|max:255',
+            'email' => 'required|email|unique:employees,email,' . $employee->id,
             'company_id' => 'nullable|exists:companies,id',
-            'email' => 'nullable|email',
             'mobile_number' => 'nullable|string|max:15',
+            'address' => 'nullable|string',
         ]);
-        $employee = \App\Models\Employee::findOrFail($id);
-        $employee->update($validated);
-        return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
+
+        $employee->update($request->only([
+            'name', 'email', 'company_id', 'mobile_number', 'address'
+        ]));
+
+        return redirect()->route('employees.index')
+                         ->with('success', 'Employee updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Employee $employee)
     {
-        $employee = \App\Models\Employee::findOrFail($id);
         $employee->delete();
-        return redirect()->route('employees.index')->with('success', 'Employee deleted successfully.');
+        return redirect()->route('employees.index')
+                         ->with('success', 'Employee deleted successfully.');
     }
 }
