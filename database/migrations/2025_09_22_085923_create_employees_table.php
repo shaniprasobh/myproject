@@ -12,25 +12,26 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('employees', function (Blueprint $table) {
-    $table->id();
-    $table->integer('user_id')->default(0);
-    $table->foreignId('company_id')->nullable()->constrained('companies')->nullOnDelete();
-    $table->string('name')->nullable();
-    $table->string('email')->nullable();
-    $table->string('mobile_number', 15)->nullable();
-    $table->string('landline_number', 15)->nullable();
-    $table->mediumText('address')->nullable();
-    $table->integer('country_id')->default(1);
-    $table->integer('state_id')->default(1);
-    $table->string('location')->nullable();
-    $table->string('profile_picture')->nullable();
-    $table->string('employee_code')->nullable();
-    $table->integer('designation_id')->nullable();
-    $table->integer('department_id')->nullable();
-    $table->date('doj')->nullable();
-    $table->tinyInteger('status')->default(1);
-    $table->timestamps();
-});
+            $table->id();
+            $table->integer('user_id')->default(0);
+            $table->foreignId('company_id')->nullable()->constrained('companies')->nullOnDelete();
+            $table->string('name')->nullable();
+            $table->string('designation')->nullable();
+            $table->string('email')->nullable();
+            $table->string('mobile_number', 15)->nullable();
+            $table->string('landline_number', 15)->nullable();
+            $table->mediumText('address')->nullable();
+            $table->integer('country_id')->default(1);
+            $table->integer('state_id')->default(1);
+            $table->string('location')->nullable();
+            $table->string('profile_picture')->nullable();
+            $table->string('employee_code')->nullable();
+            $table->integer('designation_id')->nullable();
+            $table->integer('department_id')->nullable();
+            $table->date('doj')->nullable();
+            $table->tinyInteger('status')->default(1);
+            $table->timestamps();
+        });
 
     }
 

@@ -29,12 +29,12 @@
         <input type="text" name="mobile_number" class="form-control" value="{{ old('mobile_number', $company->mobile_number) }}">
     </div>
     <div class="form-group">
-        <label>Address</label>
-        <textarea name="address" class="form-control">{{ old('address', $company->address) }}</textarea>
-    </div>
-    <div class="form-group">
         <label>GST Number</label>
         <input type="text" name="gst_number" class="form-control" value="{{ old('gst_number', $company->gst_number) }}">
+    </div>
+    <div class="form-group">
+        <label>Address</label>
+        <textarea name="address" class="form-control">{{ old('address', $company->address) }}</textarea>
     </div>
     <button type="submit" class="btn btn-success">Update</button>
 </form>

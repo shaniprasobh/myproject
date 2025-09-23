@@ -13,15 +13,16 @@
 </div>
 @endif
 
-@if($companies->isEmpty())
-    <div class="alert alert-warning">No companies found. Please add a company before editing an employee.</div>
-@else
 <form action="{{ route('employees.update', $employee->id) }}" method="POST">
     @csrf
     @method('PUT')
     <div class="form-group">
         <label>Name</label>
         <input type="text" name="name" class="form-control" value="{{ old('name', $employee->name) }}" required>
+    </div>
+    <div class="form-group">
+        <label>Designation</label>
+        <input type="text" name="designation" class="form-control" value="{{ old('designation', $employee->designation) }}">
     </div>
     <div class="form-group">
         <label>Company</label>
@@ -42,5 +43,4 @@
     </div>
     <button type="submit" class="btn btn-success">Update</button>
 </form>
-@endif
 @stop

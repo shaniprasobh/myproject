@@ -13,14 +13,15 @@
 </div>
 @endif
 
-@if($companies->isEmpty())
-    <div class="alert alert-warning">No companies found. Please add a company before adding an employee.</div>
-@else
 <form action="{{ route('employees.store') }}" method="POST">
     @csrf
     <div class="form-group">
         <label>Name</label>
         <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+    </div>
+    <div class="form-group">
+        <label>Designation</label>
+        <input type="text" name="designation" class="form-control" value="{{ old('designation') }}">
     </div>
     <div class="form-group">
         <label>Company</label>
@@ -41,5 +42,4 @@
     </div>
     <button type="submit" class="btn btn-success">Save</button>
 </form>
-@endif
 @stop

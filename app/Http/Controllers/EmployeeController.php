@@ -7,6 +7,17 @@ use Illuminate\Http\Request;
 class EmployeeController extends Controller
 {
     /**
+     * Show the profile of the logged-in user (if they have an employee record).
+     */
+    public function profile()
+    {
+        $employee = \App\Models\Employee::where('user_id', auth()->id())->with('company')->first();
+        if (!$employee) {
+            abort(404, 'Employee profile not found.');
+        }
+        return view('employees.show', compact('employee'));
+    }
+    /**
      * Display a listing of the resource.
      */
     public function index()
@@ -31,11 +42,29 @@ class EmployeeController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'designation' => 'nullable|string|max:255',
             'company_id' => 'nullable|exists:companies,id',
             'email' => 'nullable|email',
             'mobile_number' => 'nullable|string|max:15',
         ]);
-        $employee = \App\Models\Employee::create($validated);
+
+        // If email is provided, create a user and send credentials
+        $userId = null;
+        $plainPassword = null;
+        if (!empty($validated['email'])) {
+            $plainPassword = \Str::random(8);
+            $user = \App\Models\User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => bcrypt($plainPassword),
+            ]);
+            $userId = $user->id;
+
+            // Send email
+            \Mail::to($validated['email'])->send(new \App\Mail\EmployeeAccountMail($validated['email'], $plainPassword));
+        }
+
+        $employee = \App\Models\Employee::create(array_merge($validated, ['user_id' => $userId]));
         return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
     }
 
@@ -65,6 +94,7 @@ class EmployeeController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'designation' => 'nullable|string|max:255',
             'company_id' => 'nullable|exists:companies,id',
             'email' => 'nullable|email',
             'mobile_number' => 'nullable|string|max:15',

@@ -31,4 +31,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('companies', CompanyController::class);
     // Employee CRUD
     Route::resource('employees', EmployeeController::class);
+
+    // Employee profile for logged-in user
+    Route::get('employees/profile', [EmployeeController::class, 'profile'])->name('employees.profile');
 });

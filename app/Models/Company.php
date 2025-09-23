@@ -10,7 +10,7 @@ class Company extends Model
         'company_name',
         'email',
         'mobile_number',
-        'address',
         'gst_number',
+        'address',
     ];
 }

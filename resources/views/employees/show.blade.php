@@ -17,6 +17,10 @@
         <td>{{ $employee->name }}</td>
     </tr>
     <tr>
+        <th>Designation</th>
+        <td>{{ $employee->designation }}</td>
+    </tr>
+    <tr>
         <th>Company</th>
         <td>{{ $employee->company ? $employee->company->company_name : '-' }}</td>
     </tr>
@@ -27,6 +31,16 @@
     <tr>
         <th>Mobile</th>
         <td>{{ $employee->mobile_number }}</td>
+    </tr>
+    <tr>
+        <th>Role(s)</th>
+        <td>
+            @if($employee->user)
+                {{ implode(', ', $employee->user->getRoleNames()->toArray()) }}
+            @else
+                -
+            @endif
+        </td>
     </tr>
 </table>
 <a href="{{ route('employees.index') }}" class="btn btn-primary">Back</a>
