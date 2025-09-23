@@ -31,7 +31,7 @@ class CompanyController extends Controller
             'gst_number' => 'nullable|string|max:50',
         ]);
 
-        Company::create($request->all());
+    Company::create($request->only(['name', 'email', 'address']));
 
         return redirect()->route('companies.index')
                          ->with('success', 'Company created successfully.');
@@ -60,7 +60,7 @@ class CompanyController extends Controller
             'gst_number' => 'nullable|string|max:50',
         ]);
 
-        $company->update($request->all());
+    $company->update($request->only(['name', 'email', 'address']));
 
         return redirect()->route('companies.index')
                          ->with('success', 'Company updated successfully.');
