@@ -11,7 +11,8 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        //
+        $employees = \App\Models\Employee::with('company')->get();
+        return view('employees.index', compact('employees'));
     }
 
     /**
@@ -19,7 +20,8 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        //
+        $companies = \App\Models\Company::all();
+        return view('employees.create', compact('companies'));
     }
 
     /**
@@ -27,7 +29,14 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'company_id' => 'nullable|exists:companies,id',
+            'email' => 'nullable|email',
+            'mobile_number' => 'nullable|string|max:15',
+        ]);
+        $employee = \App\Models\Employee::create($validated);
+        return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
     }
 
     /**
@@ -44,7 +53,9 @@ class EmployeeController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $employee = \App\Models\Employee::findOrFail($id);
+        $companies = \App\Models\Company::all();
+        return view('employees.edit', compact('employee', 'companies'));
     }
 
     /**
@@ -52,7 +63,15 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'company_id' => 'nullable|exists:companies,id',
+            'email' => 'nullable|email',
+            'mobile_number' => 'nullable|string|max:15',
+        ]);
+        $employee = \App\Models\Employee::findOrFail($id);
+        $employee->update($validated);
+        return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
     }
 
     /**
@@ -60,6 +79,8 @@ class EmployeeController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $employee = \App\Models\Employee::findOrFail($id);
+        $employee->delete();
+        return redirect()->route('employees.index')->with('success', 'Employee deleted successfully.');
     }
 }
