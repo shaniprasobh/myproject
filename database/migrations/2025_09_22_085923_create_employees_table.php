@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id')->default(0);
             $table->foreignId('company_id')->nullable()->constrained('companies')->nullOnDelete();
-            $table->string('name')->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('name');
             $table->string('designation')->nullable();
-            $table->string('email')->nullable();
+            $table->string('email')->unique();
             $table->string('mobile_number', 15)->nullable();
             $table->string('landline_number', 15)->nullable();
             $table->mediumText('address')->nullable();
@@ -33,7 +33,8 @@ return new class extends Migration
             $table->timestamps();
         });
 
-    }
+}
+
 
     /**
      * Reverse the migrations.

@@ -35,6 +35,12 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+// app/Models/User.php
+
+public function employee()
+{
+    return $this->hasOne(Employee::class);
+}
 
     /**
      * Get the attributes that should be cast.

@@ -34,6 +34,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('companies');
+    // Drop employees table first to avoid foreign key constraint error
+    Schema::dropIfExists('employees');
+    Schema::dropIfExists('companies');
     }
 };

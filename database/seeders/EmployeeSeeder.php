@@ -28,10 +28,10 @@ class EmployeeSeeder extends Seeder
 
         foreach ($employeesData as $data) {
             // Skip if the email is the admin email
-            if ($data['email'] === 'admin@admin.com') {
+            if ($data['email'] === 'admin@example.com') {
                 continue;
             }
-            $password = \Illuminate\Support\Str::random(8); // random 8-character password
+            $password = 'password'; // fixed password for all seeded employees
 
             // Create or update user (not admin)
             $user = User::updateOrCreate(

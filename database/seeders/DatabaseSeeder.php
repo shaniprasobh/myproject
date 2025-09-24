@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
         $adminEmail = 'admin@example.com';
         $adminPassword = 'password';
 
-        $adminUser = User::firstOrCreate(
+        $adminUser = User::updateOrCreate(
             ['email' => $adminEmail],
             [
                 'name' => 'Admin User',
@@ -28,19 +28,73 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+        
+        // Debug: Output admin user info to log
+        \Log::info('Admin user after seeder:', ['user' => $adminUser]);
 
         // Assign Admin role
         if (!$adminUser->hasRole('Admin')) {
             $adminUser->assignRole('Admin');
         }
 
-        $this->command->info("Admin user created: $adminEmail / $adminPassword");
-    
+        // Create Employee record for admin if not exists
+        $adminCompany = \App\Models\Company::first();
+        \App\Models\Employee::updateOrCreate(
+            [
+                'email' => $adminEmail,
+            ],
+            [
+                'user_id' => $adminUser->id,
+                'company_id' => $adminCompany ? $adminCompany->id : null,
+                'name' => 'Admin User',
+                'mobile_number' => '9999999999',
+                'address' => 'Admin Address',
+                'status' => 1,
+            ]
+        );
 
+        $this->command->info("Admin user created: $adminEmail / $adminPassword");
 
         $this->call([
             CompanySeeder::class,
             EmployeeSeeder::class,
         ]);
+
+
+        // Ensure every user has a matching Employee record
+        $company = \App\Models\Company::first();
+        foreach (\App\Models\User::all() as $user) {
+            \App\Models\Employee::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                ],
+                [
+                    'company_id' => $company ? $company->id : null,
+                    'name' => $user->name,
+                    'mobile_number' => '9999999999',
+                    'address' => 'Default Address',
+                    'status' => 1,
+                ]
+            );
+        }
+
+        // Ensure every user has a matching Employee record
+        $company = \App\Models\Company::first();
+        foreach (\App\Models\User::all() as $user) {
+            \App\Models\Employee::updateOrCreate(
+                [
+                    'email' => $user->email,
+                ],
+                [
+                    'user_id' => $user->id,
+                    'company_id' => $company ? $company->id : null,
+                    'name' => $user->name,
+                    'mobile_number' => '9999999999',
+                    'address' => 'Default Address',
+                    'status' => 1,
+                ]
+            );
+        }
     }
 }

@@ -1,10 +1,13 @@
+
+
 <?php
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EmployeeController;
-
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PasswordController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -33,5 +36,15 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('employees', EmployeeController::class);
 
     // Employee profile for logged-in user
-    Route::get('employees/profile', [EmployeeController::class, 'profile'])->name('employees.profile');
+
+    
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/change-password', [PasswordController::class, 'showChangeForm'])->name('password.change');
+    Route::post('/change-password', [PasswordController::class, 'updatePassword'])->name('password.update');
 });
