@@ -1,100 +1,88 @@
 <?php
 
 namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
+use App\Models\Company;
+use App\Models\Employee;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        // Create default roles if they don't exist
-        $roles = ['Admin', 'Manager', 'Employee'];
-        foreach ($roles as $roleName) {
-            Role::firstOrCreate(['name' => $roleName]);
+
+        // --- Seed roles & permissions first ---
+        $this->call(RolesAndPermissionsSeeder::class);
+
+        // --- Seed companies and ensure one exists ---
+        $this->call(CompanySeeder::class);
+        $company = Company::first();
+        if (!$company) {
+            // Try to create a default company if still missing
+            $company = Company::create([
+                'company_name' => 'Default Company',
+                'address' => 'Default Address',
+                'email' => 'default@company.com',
+                'mobile_number' => '0000000000',
+                'country_id' => 1,
+                'state_id' => 1,
+                'gst_number' => 'GST000000'
+            ]);
+            $this->command->warn("⚠️ No company found, created a default company.");
         }
 
-        // Create admin user
-        $adminEmail = 'admin@example.com';
-        $adminPassword = 'password';
-
-        $adminUser = User::updateOrCreate(
-            ['email' => $adminEmail],
+        // --- Create Super Admin user ---
+        $superAdmin = User::updateOrCreate(
+            ['email' => 'admin@example.com'],
             [
-                'name' => 'Admin User',
-                'password' => Hash::make($adminPassword),
+                'name' => 'Super Admin',
+                'password' => Hash::make('password123'),
                 'email_verified_at' => now(),
             ]
         );
-        
-        // Debug: Output admin user info to log
-        \Log::info('Admin user after seeder:', ['user' => $adminUser]);
+        $superAdmin->assignRole('Super Admin');
 
-        // Assign Admin role
-        if (!$adminUser->hasRole('Admin')) {
-            $adminUser->assignRole('Admin');
-        }
-
-        // Create Employee record for admin if not exists
-        $adminCompany = \App\Models\Company::first();
-        \App\Models\Employee::updateOrCreate(
+        Employee::updateOrCreate(
+            ['email' => $superAdmin->email],
             [
-                'email' => $adminEmail,
-            ],
-            [
-                'user_id' => $adminUser->id,
-                'company_id' => $adminCompany ? $adminCompany->id : null,
-                'name' => 'Admin User',
+                'user_id' => $superAdmin->id,
+                'company_id' => $company->id,
+                'name' => $superAdmin->name,
                 'mobile_number' => '9999999999',
-                'address' => 'Admin Address',
+                'address' => 'HQ Address',
                 'status' => 1,
             ]
         );
 
-        $this->command->info("Admin user created: $adminEmail / $adminPassword");
+        $this->command->info("✅ Super Admin created: admin@example.com / password123");
 
-        $this->call([
-            CompanySeeder::class,
-            EmployeeSeeder::class,
-        ]);
+        // --- Create Manager user ---
+        $manager = User::updateOrCreate(
+            ['email' => 'manager@example.com'],
+            [
+                'name' => 'Manager User',
+                'password' => Hash::make('password123'),
+            ]
+        );
+        $manager->assignRole('Manager');
 
+        Employee::updateOrCreate(
+            ['email' => $manager->email],
+            [
+                'user_id' => $manager->id,
+                'company_id' => $company->id,
+                'name' => $manager->name,
+                'mobile_number' => '8888888888',
+                'address' => 'Manager Office',
+                'status' => 1,
+            ]
+        );
 
-        // Ensure every user has a matching Employee record
-        $company = \App\Models\Company::first();
-        foreach (\App\Models\User::all() as $user) {
-            \App\Models\Employee::updateOrCreate(
-                [
-                    'user_id' => $user->id,
-                    'email' => $user->email,
-                ],
-                [
-                    'company_id' => $company ? $company->id : null,
-                    'name' => $user->name,
-                    'mobile_number' => '9999999999',
-                    'address' => 'Default Address',
-                    'status' => 1,
-                ]
-            );
-        }
+        $this->command->info("✅ Manager created: manager@example.com / password123");
 
-        // Ensure every user has a matching Employee record
-        $company = \App\Models\Company::first();
-        foreach (\App\Models\User::all() as $user) {
-            \App\Models\Employee::updateOrCreate(
-                [
-                    'email' => $user->email,
-                ],
-                [
-                    'user_id' => $user->id,
-                    'company_id' => $company ? $company->id : null,
-                    'name' => $user->name,
-                    'mobile_number' => '9999999999',
-                    'address' => 'Default Address',
-                    'status' => 1,
-                ]
-            );
-        }
+        // --- Call Employee Seeder for regular employees ---
+        $this->call(EmployeeSeeder::class);
     }
 }

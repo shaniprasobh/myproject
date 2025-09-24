@@ -38,10 +38,17 @@ class ProfileController extends Controller
             'designation' => 'nullable|string|max:255',
             'mobile_number' => 'nullable|string|max:15',
             'address' => 'nullable|string|max:500',
+            'password' => 'nullable|string|min:8|confirmed',
         ]);
 
         // Update user info
         $user->update($request->only('name', 'email'));
+
+        // Update password if provided
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->password);
+            $user->save();
+        }
 
         // Update employee info if exists
         $employee = Employee::where('user_id', $user->id)->first();

@@ -21,6 +21,7 @@
             </div>
         </div>
 
+        @canany(['view company', 'create company', 'edit company', 'delete company'])
         <!-- Companies Card -->
         <div class="col-md-6 mb-3">
             <div class="card card-info">
@@ -33,7 +34,9 @@
                 </div>
             </div>
         </div>
+        @endcanany
 
+        @canany(['view employee', 'create employee', 'edit employee', 'delete employee'])
         <!-- Employees Card -->
         <div class="col-md-6 mb-3">
             <div class="card card-success">
@@ -46,6 +49,7 @@
                 </div>
             </div>
         </div>
+        @endcanany
     </div>
 </div>
 @endsection

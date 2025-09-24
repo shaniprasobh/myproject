@@ -29,6 +29,12 @@ class Employee extends Authenticatable
         'status',
         'password',
     ];
+// app/Models/Employee.php
+
+public function user()
+{
+    return $this->belongsTo(User::class);
+}
 
     protected $hidden = [
         'password',

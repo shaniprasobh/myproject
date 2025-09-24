@@ -50,6 +50,15 @@
                     </div>
                 @endif
 
+                <div class="form-group mb-3">
+                    <label for="password">New Password <small>(leave blank to keep current)</small></label>
+                    <input type="password" name="password" class="form-control" autocomplete="new-password">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="password_confirmation">Confirm New Password</label>
+                    <input type="password" name="password_confirmation" class="form-control" autocomplete="new-password">
+                </div>
+
                 <button type="submit" class="btn btn-success">Update Profile</button>
                 <a href="{{ route('profile.show') }}" class="btn btn-secondary">Cancel</a>
             </form>

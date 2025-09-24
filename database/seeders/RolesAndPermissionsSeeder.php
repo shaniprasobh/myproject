@@ -13,36 +13,33 @@ class RolesAndPermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Create permissions
-        Permission::firstOrCreate(['name' => 'create company']);
-        Permission::firstOrCreate(['name' => 'edit company']);
-        Permission::firstOrCreate(['name' => 'delete company']);
-        Permission::firstOrCreate(['name' => 'view company']);
+        // Define permissions
+        $permissions = [
+            'create company', 'edit company', 'delete company', 'view company',
+            'create employee', 'edit employee', 'delete employee', 'view employee',
+            'view profile', 'change password'
+        ];
 
-        Permission::firstOrCreate(['name' => 'create employee']);
-        Permission::firstOrCreate(['name' => 'edit employee']);
-        Permission::firstOrCreate(['name' => 'delete employee']);
-        Permission::firstOrCreate(['name' => 'view employee']);
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
+        }
 
-        // Create roles and assign permissions
-        $admin = Role::firstOrCreate(['name' => 'admin']);
-        $admin->givePermissionTo(Permission::all());
+        // Create roles
+        $superAdmin = Role::firstOrCreate(['name' => 'Super Admin']);
+        $manager    = Role::firstOrCreate(['name' => 'Manager']);
+        $employee   = Role::firstOrCreate(['name' => 'Employee']);
 
-        $manager = Role::firstOrCreate(['name' => 'manager']);
+        // Assign permissions
+        $superAdmin->givePermissionTo(Permission::all());
+
         $manager->givePermissionTo([
-            'create company',
-            'edit company',
-            'view company',
-            'create employee',
-            'edit employee',
-            'view employee',
+            'create company', 'edit company', 'view company',
+            'create employee', 'edit employee', 'view employee'
         ]);
 
-        $employee = Role::firstOrCreate(['name' => 'employee']);
         $employee->givePermissionTo([
-            'view company',
-            'view employee',
-            'edit employee',
+            'view profile',
+            'change password',
         ]);
     }
 }

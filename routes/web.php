@@ -5,7 +5,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PasswordController;
 /*
@@ -30,21 +30,21 @@ Route::get('/dashboard', function () {
 
 // Protected routes
 Route::middleware(['auth'])->group(function () {
-    // Company CRUD
-    Route::resource('companies', CompanyController::class);
-    // Employee CRUD
-    Route::resource('employees', EmployeeController::class);
-
-    // Employee profile for logged-in user
-
-    
+    // Company CRUD (permission protected)
+    Route::resource('companies', CompanyController::class)->middleware([
+        'permission:view company|create company|edit company|delete company'
+    ]);
+    // Employee CRUD (permission protected)
+    Route::resource('employees', EmployeesController::class)->middleware([
+        'permission:view employee|create employee|edit employee|delete employee'
+    ]);
 });
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-});
-Route::middleware(['auth'])->group(function () {
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/change-password', [PasswordController::class, 'showChangeForm'])->name('password.change');
     Route::post('/change-password', [PasswordController::class, 'updatePassword'])->name('password.update');
 });

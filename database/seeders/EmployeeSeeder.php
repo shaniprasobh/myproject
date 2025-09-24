@@ -15,25 +15,34 @@ class EmployeeSeeder extends Seeder
         $company = Company::first();
 
         if (!$company) {
-            $this->command->info("No company found. Please seed a company first.");
+            $this->command->warn("⚠️ No company found. Please seed a company first.");
             return;
         }
 
-        // List of sample employees
+        // Sample employees
         $employeesData = [
-            ['name' => 'John Doe', 'email' => 'john@example.com', 'mobile_number' => '9000000001'],
-            ['name' => 'Jane Smith', 'email' => 'jane@example.com', 'mobile_number' => '9000000002'],
-            ['name' => 'Alice Johnson', 'email' => 'alice@example.com', 'mobile_number' => '9000000003'],
+            [
+                'name' => 'Employee User',
+                'email' => 'employee@example.com',
+                'mobile_number' => '7777777777',
+            ],
+            [
+                'name' => 'John Doe',
+                'email' => 'john@example.com',
+                    'mobile_number' => '1234567890',
+                    'address' => '123 Main St',
+            ],
+            [
+                'name' => 'Jane Smith',
+                'email' => 'jane@example.com',
+                    'mobile_number' => '9876543210',
+                    'address' => '456 Elm St',
+            ],
         ];
 
         foreach ($employeesData as $data) {
-            // Skip if the email is the admin email
-            if ($data['email'] === 'admin@example.com') {
-                continue;
-            }
-            $password = 'password'; // fixed password for all seeded employees
+            $password = 'password123';
 
-            // Create or update user (not admin)
             $user = User::updateOrCreate(
                 ['email' => $data['email']],
                 [
@@ -42,24 +51,23 @@ class EmployeeSeeder extends Seeder
                 ]
             );
 
-            // Create or update employee and link to user
-            $employee = Employee::updateOrCreate(
-                [
-                    'email' => $data['email'],
-                ],
+            if (!$user->hasRole('Employee')) {
+                $user->assignRole('Employee');
+            }
+
+            Employee::updateOrCreate(
+                ['email' => $data['email']],
                 [
                     'user_id' => $user->id,
                     'company_id' => $company->id,
                     'name' => $data['name'],
                     'mobile_number' => $data['mobile_number'],
                     'address' => 'Default Address',
-                    'password' => Hash::make($password), // store hashed password
                     'status' => 1,
                 ]
             );
 
-            // Output password to console for testing
-            $this->command->info("Employee {$data['name']} created/updated with password: $password");
+            $this->command->info("✅ Employee {$data['name']} created with password: $password");
         }
     }
 }
