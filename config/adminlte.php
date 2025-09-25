@@ -307,13 +307,22 @@ return [
             'text' => 'Companies',
             'url'  => 'companies',
             'icon' => 'fas fa-building',
+            'can' => 'view company',
         ],
         [
             'text' => 'Employees',
             'url'  => 'employees',
             'icon' => 'fas fa-users',
+            'can' => 'view employee',
         ],
-        ['header' => 'account_settings'],
+        [
+            'text' => 'Manage Roles',
+            'url' => 'roles/manage',
+            'icon' => 'fas fa-user-cog',
+            'can' => 'manage roles',
+        ],
+        // ['header' => 'account_settings'],
+        // Debug Menu removed
         [
             'text' => 'profile',
             'url' => 'profile',

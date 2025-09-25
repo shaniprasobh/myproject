@@ -10,23 +10,39 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\PermissionHelper;
 
 class EmployeesController extends Controller
 {
     // Delete an employee
     public function destroy($id)
     {
+        $user = Auth::user();
+        if (!PermissionHelper::isUserPermittedTo($user, 'delete employee')) {
+            abort(403, 'You do not have permission to delete employees.');
+        }
         $employee = Employee::findOrFail($id);
-        $user = $employee->user;
+        $targetUser = $employee->user;
+        // Restrict: Only Super Admin can delete Super Admins or Managers
+        if ($targetUser && ($targetUser->hasRole('Super Admin') || $targetUser->hasRole('Manager'))) {
+            if (!$user->hasRole('Super Admin')) {
+                abort(403, 'Only Super Admin can delete Super Admin or Manager employees.');
+            }
+        }
+        $userModel = $employee->user;
         $employee->delete();
-        if ($user) {
-            $user->delete();
+        if ($userModel) {
+            $userModel->delete();
         }
         return redirect()->route('employees.index')->with('success', 'Employee deleted successfully.');
     }
     // Update an employee
     public function update(Request $request, $id)
     {
+        $user = Auth::user();
+        if (!PermissionHelper::isUserPermittedTo($user, 'edit employee')) {
+            abort(403, 'You do not have permission to edit employees.');
+        }
         $employee = Employee::findOrFail($id);
         $user = $employee->user;
 
@@ -74,10 +90,21 @@ class EmployeesController extends Controller
     // Show the form for editing an employee
     public function edit($id)
     {
+        $user = Auth::user();
+        if (!PermissionHelper::isUserPermittedTo($user, 'edit employee')) {
+            abort(403, 'You do not have permission to edit employees.');
+        }
         $employee = Employee::findOrFail($id);
         $companies = Company::all();
         $showRoleDropdown = true; // Always show the role dropdown
         $roles = ['Manager', 'Employee'];
+        $targetUser = $employee->user;
+        // Restrict: Only Super Admin can edit Super Admins or Managers
+        if ($targetUser && ($targetUser->hasRole('Super Admin') || $targetUser->hasRole('Manager'))) {
+            if (!$user->hasRole('Super Admin')) {
+                abort(403, 'Only Super Admin can edit Super Admin or Manager employees.');
+            }
+        }
         return view('employees.edit', compact('employee', 'companies', 'showRoleDropdown', 'roles'));
     }
     // Show a single employee
@@ -89,6 +116,10 @@ class EmployeesController extends Controller
     // Show all employees
     public function index()
     {
+        $user = Auth::user();
+        if (!PermissionHelper::isUserPermittedTo($user, 'view employee')) {
+            abort(403, 'You do not have permission to view employees.');
+        }
         $employees = Employee::with('company')->get();
         return view('employees.index', compact('employees'));
     }
@@ -96,8 +127,12 @@ class EmployeesController extends Controller
     // Show create employee form
     public function create()
     {
+        $user = Auth::user();
+        if (!PermissionHelper::isUserPermittedTo($user, 'create employee')) {
+            abort(403, 'You do not have permission to create employees.');
+        }
         $companies = Company::all();
-        $currentUser = Auth::user();
+        $currentUser = $user;
         $currentRole = null;
         if ($currentUser && method_exists($currentUser, 'getRoleNames')) {
             $roleNames = call_user_func([$currentUser, 'getRoleNames']);
@@ -111,6 +146,10 @@ class EmployeesController extends Controller
     // Store new employee
     public function store(Request $request)
     {
+        $user = Auth::user();
+        if (!PermissionHelper::isUserPermittedTo($user, 'create employee')) {
+            abort(403, 'You do not have permission to create employees.');
+        }
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',

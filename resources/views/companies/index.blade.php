@@ -7,11 +7,15 @@
 @stop
 
 @section('content')
+    <!-- DataTables CSS CDN -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
     <div class="mb-3 text-end">
-        <a href="{{ route('companies.create') }}" class="btn btn-primary">Add Company</a>
+        @if (PermissionHelper::isUserPermittedTo($user, 'create company'))
+            <a href="{{ route('companies.create') }}" class="btn btn-primary">Add Company</a>
+        @endif
     </div>
     <table class="table table-bordered table-striped">
         <thead>
@@ -38,9 +42,12 @@
                         <a href="{{ route('companies.show', $company->id) }}" class="btn btn-info btn-sm" title="View">
                             <i class="fas fa-eye"></i>
                         </a>
+                        @if (PermissionHelper::isUserPermittedTo($user, 'edit company'))
                         <a href="{{ route('companies.edit', $company->id) }}" class="btn btn-warning btn-sm" title="Edit">
                             <i class="fas fa-edit"></i>
                         </a>
+                        @endif
+                        @if (PermissionHelper::isUserPermittedTo($user, 'delete company'))
                         <form action="{{ route('companies.destroy', $company->id) }}" method="POST"
                             style="display:inline;">
                             @csrf
@@ -49,6 +56,7 @@
                                 <i class="fas fa-trash"></i>
                             </button>
                         </form>
+                        @endif
                     </td>
                 </tr>
             @empty
@@ -58,4 +66,14 @@
             @endforelse
         </tbody>
     </table>
+    @push('js')
+        <!-- jQuery and DataTables JS CDN for fallback -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('.table').DataTable();
+            });
+        </script>
+    @endpush
 @stop

@@ -15,9 +15,17 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Define permissions
         $permissions = [
-            'create company', 'edit company', 'delete company', 'view company',
-            'create employee', 'edit employee', 'delete employee', 'view employee',
-            'view profile', 'change password'
+            'create company',
+            'edit company',
+            'delete company',
+            'view company',
+            'create employee',
+            'edit employee',
+            'delete employee',
+            'view employee',
+            'view profile',
+            'change password',
+            'manage roles'
         ];
 
         foreach ($permissions as $permission) {
@@ -33,8 +41,13 @@ class RolesAndPermissionsSeeder extends Seeder
         $superAdmin->givePermissionTo(Permission::all());
 
         $manager->givePermissionTo([
-            'create company', 'edit company', 'view company',
-            'create employee', 'edit employee', 'view employee'
+            'create company',
+            'edit company',
+            'view company',
+            'create employee',
+            'edit employee',
+            'view employee',
+            'manage roles'
         ]);
 
         $employee->givePermissionTo([

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Employee;
 use App\Models\User;
-
+use App\Helpers\PermissionHelper;
 
 class ProfileController extends Controller
 {
@@ -34,9 +34,7 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        /** @var \App\Models\User $user */
         $user = Auth::user();
-
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',

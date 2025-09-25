@@ -1,5 +1,3 @@
-
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -8,6 +6,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\RolesController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,6 +27,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware('auth')->name('dashboard');
 
+
 // Protected routes
 Route::middleware(['auth'])->group(function () {
     // Company CRUD (permission protected)
@@ -41,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -48,3 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/change-password', [PasswordController::class, 'showChangeForm'])->name('password.change');
     Route::post('/change-password', [PasswordController::class, 'updatePassword'])->name('password.update');
 });
+
+// Manage roles & permissions (advanced)
+Route::get('/roles/manage', [RolesController::class, 'manage'])->name('roles.manage');
+Route::match(['put', 'post'], '/roles/manage', [RolesController::class, 'manageUpdate'])->name('roles.manage.update');
