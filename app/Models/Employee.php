@@ -23,6 +23,7 @@ class Employee extends Authenticatable
         'location',
         'profile_picture',
         'employee_code',
+        'designation',
         'designation_id',
         'department_id',
         'doj',

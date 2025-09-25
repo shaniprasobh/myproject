@@ -32,7 +32,7 @@ class EmployeesController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'company_id' => 'required|exists:companies,id',
-            'mobile_number' => 'nullable|string|max:15',
+            'mobile_number' => ['nullable', 'regex:/^[0-9]{10}$/'],
             'address' => 'nullable|string|max:255',
         ];
         // Only validate password if present
@@ -84,8 +84,10 @@ class EmployeesController extends Controller
     // Show create employee form
     public function create()
     {
-        $companies = Company::all();
-        return view('employees.create', compact('companies'));
+    $companies = Company::all();
+    $currentUser = auth()->user();
+    $currentRole = $currentUser ? $currentUser->getRoleNames()->first() : null;
+    return view('employees.create', compact('companies', 'currentRole'));
     }
 
     // Store new employee
@@ -96,8 +98,9 @@ class EmployeesController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'company_id' => 'required|exists:companies,id',
-            'mobile_number' => 'nullable|string|max:15',
+            'mobile_number' => ['nullable', 'regex:/^[0-9]{10}$/'],
             'address' => 'nullable|string|max:255',
+            'role' => 'required|in:Manager,Employee',
         ]);
 
         // Generate temporary password
@@ -110,7 +113,7 @@ class EmployeesController extends Controller
             'password' => Hash::make($tempPassword),
         ]);
 
-        $user->assignRole('Employee');
+        $user->assignRole($request->role);
 
         // Create employee linked to user
         $employee = Employee::create([

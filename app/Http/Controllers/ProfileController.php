@@ -36,7 +36,7 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'designation' => 'nullable|string|max:255',
-            'mobile_number' => 'nullable|string|max:15',
+            'mobile_number' => ['nullable', 'regex:/^[0-9]{10}$/'],
             'address' => 'nullable|string|max:500',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
