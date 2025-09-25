@@ -1,6 +1,43 @@
 <<<<<<< HEAD
-# myproject
-Basic-project
+
+# Employee Management System
+
+This project is a web-based Employee Management System built with Laravel and AdminLTE. It allows organizations to manage employees, companies, and user roles with a modern, user-friendly interface.
+
+## Features
+
+- Employee CRUD (Create, Read, Update, Delete)
+- Company management
+- Role-based access control (Super Admin, Manager, Employee)
+- Profile management and password change
+- AdminLTE dashboard UI
+- Validation for email and mobile number
+- Secure authentication
+- Database seeding and migrations
+
+## Tools & Technologies Used
+
+- **Laravel**: PHP web application framework for backend logic and routing
+- **AdminLTE**: Responsive dashboard template for UI
+- **Spatie Laravel Permission**: Role and permission management
+- **Blade**: Laravel's templating engine for views
+- **MySQL**: Database for storing users, employees, and companies
+- **Composer**: Dependency management for PHP
+- **NPM & Vite**: Frontend asset management
+- **PHPUnit**: Testing
+
+## Getting Started
+
+1. Clone the repository
+2. Install PHP dependencies: `composer install`
+3. Install Node dependencies: `npm install && npm run dev`
+4. Set up your `.env` file and database
+5. Run migrations and seeders: `php artisan migrate --seed`
+6. Start the server: `php artisan serve`
+
+## License
+
+This project is open-source and available under the MIT license.
 =======
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
