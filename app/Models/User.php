@@ -8,6 +8,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @method bool save(array $options = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|static query()
+ * @method static static create(array $attributes = [])
+ */
 class User extends Authenticatable
 {
     use HasRoles;
@@ -35,12 +44,12 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-// app/Models/User.php
+    // app/Models/User.php
 
-public function employee()
-{
-    return $this->hasOne(Employee::class);
-}
+    public function employee()
+    {
+        return $this->hasOne(Employee::class);
+    }
 
     /**
      * Get the attributes that should be cast.

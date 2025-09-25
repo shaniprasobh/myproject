@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Company;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeesController extends Controller
 {
@@ -39,6 +41,9 @@ class EmployeesController extends Controller
         if ($request->filled('password')) {
             $rules['password'] = 'required|string|min:8|confirmed';
         }
+        if ($request->has('role')) {
+            $rules['role'] = 'required|in:Manager,Employee';
+        }
         $request->validate($rules);
 
         // Update user
@@ -48,6 +53,12 @@ class EmployeesController extends Controller
             $user->password = Hash::make($request->password);
         }
         $user->save();
+
+        // Always sync user role if present in request
+        if ($request->has('role')) {
+            $newRole = $request->input('role');
+            $user->syncRoles([$newRole]);
+        }
 
         // Update employee
         $employee->update([
@@ -65,7 +76,9 @@ class EmployeesController extends Controller
     {
         $employee = Employee::findOrFail($id);
         $companies = Company::all();
-        return view('employees.edit', compact('employee', 'companies'));
+        $showRoleDropdown = true; // Always show the role dropdown
+        $roles = ['Manager', 'Employee'];
+        return view('employees.edit', compact('employee', 'companies', 'showRoleDropdown', 'roles'));
     }
     // Show a single employee
     public function show($id)
@@ -76,24 +89,28 @@ class EmployeesController extends Controller
     // Show all employees
     public function index()
     {
-    \Log::info('Test log message from EmployeesController@index');
-    $employees = Employee::with('company')->get();
-    return view('employees.index', compact('employees'));
+        $employees = Employee::with('company')->get();
+        return view('employees.index', compact('employees'));
     }
 
     // Show create employee form
     public function create()
     {
-    $companies = Company::all();
-    $currentUser = auth()->user();
-    $currentRole = $currentUser ? $currentUser->getRoleNames()->first() : null;
-    return view('employees.create', compact('companies', 'currentRole'));
+        $companies = Company::all();
+        $currentUser = Auth::user();
+        $currentRole = null;
+        if ($currentUser && method_exists($currentUser, 'getRoleNames')) {
+            $roleNames = call_user_func([$currentUser, 'getRoleNames']);
+            $currentRole = $roleNames && method_exists($roleNames, 'isNotEmpty') && $roleNames->isNotEmpty() ? $roleNames->first() : null;
+        } elseif ($currentUser && property_exists($currentUser, 'role')) {
+            $currentRole = $currentUser->role;
+        }
+        return view('employees.create', compact('companies', 'currentRole'));
     }
 
     // Store new employee
     public function store(Request $request)
     {
-        \Log::info('Test log message: store method called');
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -126,12 +143,12 @@ class EmployeesController extends Controller
             'status' => 1,
         ]);
 
-       // Log the temporary password safely (for development only)
-\Log::channel('single')->info("New employee created. Temporary password: {$tempPassword}", [
-    'employee_id' => $employee->id,
-    'name'        => $employee->name,
-    'email'       => $employee->email,
-]);
+        // Log the temporary password safely (for development only)
+        Log::channel('single')->info("New employee created. Temporary password: {$tempPassword}", [
+            'employee_id' => $employee->id,
+            'name'        => $employee->name,
+            'email'       => $employee->email,
+        ]);
 
 
         return redirect()->route('employees.index')

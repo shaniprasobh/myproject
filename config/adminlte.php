@@ -304,20 +304,14 @@ return [
             'text' => 'search',
         ],
         [
-            'text' => 'pages',
-            'icon' => 'far fa-fw fa-file',
-            'submenu' => [
-                [
-                    'text' => 'Companies',
-                    'url'  => 'companies',
-                    'icon' => 'fas fa-building',
-                ],
-                [
-                    'text' => 'Employees',
-                    'url'  => 'employees',
-                    'icon' => 'fas fa-users',
-                ],
-            ],
+            'text' => 'Companies',
+            'url'  => 'companies',
+            'icon' => 'fas fa-building',
+        ],
+        [
+            'text' => 'Employees',
+            'url'  => 'employees',
+            'icon' => 'fas fa-users',
         ],
         ['header' => 'account_settings'],
         [
@@ -325,7 +319,6 @@ return [
             'url' => 'profile',
             'icon' => 'fas fa-fw fa-user',
         ],
-      
     ],
 
     /*

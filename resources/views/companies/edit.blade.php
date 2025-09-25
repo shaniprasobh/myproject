@@ -3,39 +3,64 @@
 @section('title', 'Edit Company')
 
 @section('content_header')
-<h1>Edit Company</h1>
 @stop
 
 @section('content')
-@if ($errors->any())
-<div class="alert alert-danger">
-    <ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
-</div>
-@endif
-
-<form action="{{ route('companies.update', $company->id) }}" method="POST">
-    @csrf
-    @method('PUT')
-    <div class="form-group">
-        <label>Company Name</label>
-        <input type="text" name="company_name" class="form-control" value="{{ old('company_name', $company->company_name) }}" required>
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="fas fa-building"></i> Edit Company</h4>
+        </div>
+        <div class="card-body">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <form action="{{ route('companies.update', $company->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label><i class="fas fa-building"></i> Company Name</label>
+                            <input type="text" name="company_name" class="form-control"
+                                value="{{ old('company_name', $company->company_name) }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" name="email" class="form-control"
+                                value="{{ old('email', $company->email) }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Mobile Number</label>
+                            <input type="text" name="mobile_number" class="form-control"
+                                value="{{ old('mobile_number', $company->mobile_number) }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label><i class="fas fa-receipt"></i> GST Number</label>
+                            <input type="text" name="gst_number" class="form-control"
+                                value="{{ old('gst_number', $company->gst_number) }}">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> Address</label>
+                            <textarea name="address" class="form-control">{{ old('address', $company->address) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success mt-3"><i class="fas fa-save"></i> Update Company</button>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="email" class="form-control" value="{{ old('email', $company->email) }}">
-    </div>
-    <div class="form-group">
-        <label>Mobile Number</label>
-        <input type="text" name="mobile_number" class="form-control" value="{{ old('mobile_number', $company->mobile_number) }}">
-    </div>
-    <div class="form-group">
-        <label>GST Number</label>
-        <input type="text" name="gst_number" class="form-control" value="{{ old('gst_number', $company->gst_number) }}">
-    </div>
-    <div class="form-group">
-        <label>Address</label>
-        <textarea name="address" class="form-control">{{ old('address', $company->address) }}</textarea>
-    </div>
-    <button type="submit" class="btn btn-success">Update</button>
-</form>
 @stop

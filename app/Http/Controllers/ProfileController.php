@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\Employee;
+use App\Models\User;
 
 
 class ProfileController extends Controller
@@ -14,7 +16,6 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $employee = Employee::where('user_id', $user->id)->first();
-
         return view('profile.show', compact('user', 'employee'));
     }
 
@@ -28,8 +29,12 @@ class ProfileController extends Controller
     }
 
     // Update profile
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         $request->validate([
@@ -42,13 +47,13 @@ class ProfileController extends Controller
         ]);
 
         // Update user info
-        $user->update($request->only('name', 'email'));
-
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
         // Update password if provided
         if ($request->filled('password')) {
             $user->password = bcrypt($request->password);
-            $user->save();
         }
+        $user->save();
 
         // Update employee info if exists
         $employee = Employee::where('user_id', $user->id)->first();
