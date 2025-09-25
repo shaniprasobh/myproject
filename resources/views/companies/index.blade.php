@@ -12,8 +12,9 @@
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
+    @php use App\Helpers\PermissionHelper; @endphp
     <div class="mb-3 text-end">
-        @if (PermissionHelper::isUserPermittedTo($user, 'create company'))
+        @if (PermissionHelper::isUserPermittedTo(auth()->user(), 'create company'))
             <a href="{{ route('companies.create') }}" class="btn btn-primary">Add Company</a>
         @endif
     </div>
@@ -42,20 +43,22 @@
                         <a href="{{ route('companies.show', $company->id) }}" class="btn btn-info btn-sm" title="View">
                             <i class="fas fa-eye"></i>
                         </a>
-                        @if (PermissionHelper::isUserPermittedTo($user, 'edit company'))
-                        <a href="{{ route('companies.edit', $company->id) }}" class="btn btn-warning btn-sm" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </a>
+                        @if (PermissionHelper::isUserPermittedTo(auth()->user(), 'edit company'))
+                            <a href="{{ route('companies.edit', $company->id) }}" class="btn btn-warning btn-sm"
+                                title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
                         @endif
-                        @if (PermissionHelper::isUserPermittedTo($user, 'delete company'))
-                        <form action="{{ route('companies.destroy', $company->id) }}" method="POST"
-                            style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
+                        @if (PermissionHelper::isUserPermittedTo(auth()->user(), 'delete company'))
+                            <form action="{{ route('companies.destroy', $company->id) }}" method="POST"
+                                style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')"
+                                    title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         @endif
                     </td>
                 </tr>
