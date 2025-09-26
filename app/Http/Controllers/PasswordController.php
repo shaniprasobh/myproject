@@ -31,7 +31,7 @@ class PasswordController extends Controller
 
         // Update password
         $user->password = Hash::make($request->new_password);
-    $saved = $user->save();
+        $saved = $user->save();
 
         if ($saved) {
             Log::info('Password updated successfully', ['user_id' => $user->id]);

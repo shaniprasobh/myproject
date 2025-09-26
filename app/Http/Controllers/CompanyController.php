@@ -7,10 +7,14 @@ use App\Models\Company;
 use App\Helpers\PermissionHelper;
 
 class CompanyController extends Controller
+/**
+ * @var \App\Models\User|null
+ */
 {
     public function index()
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = \auth()->user();
         if (!PermissionHelper::isUserPermittedTo($user, 'view company')) {
             abort(403, 'You do not have permission to view companies.');
         }
@@ -20,7 +24,8 @@ class CompanyController extends Controller
 
     public function create()
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = \auth()->user();
         if (!PermissionHelper::isUserPermittedTo($user, 'create company')) {
             abort(403, 'You do not have permission to create companies.');
         }
@@ -29,7 +34,8 @@ class CompanyController extends Controller
 
     public function store(Request $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = \auth()->user();
         if (!PermissionHelper::isUserPermittedTo($user, 'create company')) {
             abort(403, 'You do not have permission to create companies.');
         }
@@ -55,7 +61,8 @@ class CompanyController extends Controller
 
     public function show(Company $company)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = \auth()->user();
         if (!PermissionHelper::isUserPermittedTo($user, 'view company')) {
             abort(403, 'You do not have permission to view companies.');
         }
@@ -64,7 +71,8 @@ class CompanyController extends Controller
 
     public function edit(Company $company)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = \auth()->user();
         if (!PermissionHelper::isUserPermittedTo($user, 'edit company')) {
             abort(403, 'You do not have permission to edit companies.');
         }
@@ -73,7 +81,8 @@ class CompanyController extends Controller
 
     public function update(Request $request, Company $company)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = \auth()->user();
         if (!PermissionHelper::isUserPermittedTo($user, 'edit company')) {
             abort(403, 'You do not have permission to edit companies.');
         }
@@ -99,7 +108,8 @@ class CompanyController extends Controller
 
     public function destroy(Company $company)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = \auth()->user();
         if (!PermissionHelper::isUserPermittedTo($user, 'delete company')) {
             abort(403, 'You do not have permission to delete companies.');
         }

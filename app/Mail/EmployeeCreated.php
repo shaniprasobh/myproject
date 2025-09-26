@@ -22,10 +22,6 @@ class EmployeeCreated extends Mailable
     public function build()
     {
         return $this->subject('Your Login Credentials')
-                    ->view('emails.employee_created') // Blade view
-                    ->with([
-                        'employee' => $this->employee,
-                        'password' => $this->password,
-                    ]);
+            ->view('emails.employee_created');
     }
 }
